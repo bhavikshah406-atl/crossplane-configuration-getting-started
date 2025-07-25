@@ -1,0 +1,14 @@
+apiVersion: platform.acme.co/v1alpha1
+kind: FleetManager
+metadata:
+  name: production-fleet
+spec:
+  parameters:
+    fleetName: web-servers
+    region: us-west-2
+    instanceCount: 5
+    environment: prod
+    tags:
+      team: platform
+      cost-center: engineering
+      project: web-app 

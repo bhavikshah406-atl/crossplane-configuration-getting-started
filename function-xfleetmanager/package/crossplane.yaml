@@ -1,0 +1,9 @@
+---
+apiVersion: meta.pkg.crossplane.io/v1beta1
+kind: Function
+metadata:
+  name: function-xfleetmanager
+  annotations:
+    package.crossplane.io/package-name: function-xfleetmanager
+    package.crossplane.io/package-version: v0.1.0
+spec: {}

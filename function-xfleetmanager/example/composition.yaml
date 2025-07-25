@@ -1,0 +1,13 @@
+apiVersion: apiextensions.crossplane.io/v1
+kind: Composition
+metadata:
+  name: xfleetmanagers.platform.acme.co
+spec:
+  compositeTypeRef:
+    apiVersion: platform.acme.co/v1alpha1
+    kind: XFleetManager
+  mode: Pipeline
+  pipeline:
+  - step: create-fleet-resources
+    functionRef:
+      name: function-xfleetmanager

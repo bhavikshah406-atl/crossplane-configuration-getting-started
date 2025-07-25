@@ -1,0 +1,67 @@
+apiVersion: apiextensions.crossplane.io/v1
+kind: CompositeResourceDefinition
+metadata:
+  name: xfleetmanagers.platform.acme.co
+spec:
+  group: platform.acme.co
+  names:
+    kind: XFleetManager
+    plural: xfleetmanagers
+  claimNames:
+    kind: FleetManager
+    plural: fleetmanagers
+  versions:
+    - name: v1alpha1
+      served: true
+      referenceable: true
+      schema:
+        openAPIV3Schema:
+          type: object
+          properties:
+            spec:
+              type: object
+              description: |
+                The specification for how this fleet manager should be
+                configured.
+              properties:
+                parameters:
+                  type: object
+                  description: |
+                    The parameters indicating how this fleet manager should
+                    be configured.
+                  properties:
+                    fleetName:
+                      type: string
+                      description: |
+                        The name of the fleet to manage.
+                    region:
+                      type: string
+                      description: |
+                        The geographic region where the fleet should be managed.
+                    instanceCount:
+                      type: integer
+                      description: |
+                        The number of instances in the fleet.
+                      minimum: 1
+                      maximum: 100
+                      default: 3
+                    environment:
+                      type: string
+                      description: |
+                        The environment for this fleet (dev, staging, prod).
+                      enum:
+                        - dev
+                        - staging
+                        - prod
+                      default: dev
+                    tags:
+                      type: object
+                      description: |
+                        Additional tags for fleet resources.
+                      additionalProperties:
+                        type: string
+                  required:
+                    - fleetName
+                    - region
+              required:
+                - parameters 

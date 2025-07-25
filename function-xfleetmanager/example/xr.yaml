@@ -1,0 +1,13 @@
+apiVersion: platform.acme.co/v1alpha1
+kind: XFleetManager
+metadata:
+  name: example-fleet
+spec:
+  parameters:
+    fleetName: web-servers
+    region: us-west-2
+    instanceCount: 3
+    environment: dev
+    tags:
+      team: platform
+      project: web-app

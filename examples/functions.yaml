@@ -11,3 +11,17 @@ metadata:
   name: crossplane-contrib-function-auto-ready
 spec:
   package: xpkg.upbound.io/crossplane-contrib/function-auto-ready:v0.2.1
+---
+apiVersion: pkg.crossplane.io/v1beta1
+kind: Function
+metadata:
+  name: function-xfleetmanager
+spec:
+  package: ghcr.io/bhavikshah406-atl/function-xfleetmanager:v0.1.0
+---
+apiVersion: pkg.crossplane.io/v1beta1
+kind: Function
+metadata:
+  name: function-go-templating
+spec:
+  package: xpkg.upbound.io/crossplane-contrib/function-go-templating:v0.4.1

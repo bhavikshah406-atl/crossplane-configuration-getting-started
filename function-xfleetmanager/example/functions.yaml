@@ -1,0 +1,11 @@
+---
+apiVersion: pkg.crossplane.io/v1beta1
+kind: Function
+metadata:
+  name: function-xfleetmanager
+  annotations:
+    render.crossplane.io/runtime: Development
+spec:
+  # The CLI ignores this package when using the Development runtime.
+  # You can set it to any value.
+  package: xpkg.crossplane.io/crossplane-contrib/function-xfleetmanager:v0.1.0

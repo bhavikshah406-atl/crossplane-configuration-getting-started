@@ -1,0 +1,100 @@
+# XFleetManager Composition using Go Templating Functions
+# This is a reference implementation showing how the composition would look
+# with a properly configured Go templating function
+#
+# To use this version:
+# 1. Ensure the function-go-templating package is correctly installed
+# 2. Update the function input format based on the specific Go templating function
+# 3. Replace the main composition.yaml with this file
+#
+apiVersion: apiextensions.crossplane.io/v1
+kind: Composition
+metadata:
+  name: xfleetmanagers-go-template.platform.acme.co
+spec:
+  compositeTypeRef:
+    apiVersion: platform.acme.co/v1alpha1
+    kind: XFleetManager
+  mode: Pipeline
+  pipeline:
+    - step: create-fleet-resources
+      functionRef:
+        name: function-go-templating
+      input:
+        # Note: The exact input format depends on the Go templating function used
+        # This is a conceptual example based on common Go templating patterns
+        apiVersion: gotemplating.fn.crossplane.io/v1beta1
+        kind: GoTemplate
+        template: |
+          {{/* Extract composite resource parameters */}}
+          {{- $xr := .observed.composite.resource -}}
+          {{- $fleetName := $xr.spec.parameters.fleetName -}}
+          {{- $region := $xr.spec.parameters.region -}}
+          {{- $instanceCount := default 3 $xr.spec.parameters.instanceCount -}}
+          {{- $environment := default "dev" $xr.spec.parameters.environment -}}
+          {{- $tags := default dict $xr.spec.parameters.tags -}}
+          
+          {{/* Create fleet instances using range */}}
+          {{- range $i := until $instanceCount }}
+          ---
+          apiVersion: nop.crossplane.io/v1alpha1
+          kind: NopResource
+          metadata:
+            name: {{ $fleetName }}-instance-{{ $i }}
+            annotations:
+              crossplane.io/external-name: {{ $fleetName }}-instance-{{ $i }}
+              crossplane.io/composition-resource-name: fleet-instance-{{ $i }}
+          spec:
+            forProvider:
+              conditionAfter:
+                - conditionType: "Ready"
+                  conditionStatus: "True"
+                  time: "10s"
+              fields:
+                fleetName: {{ $fleetName }}
+                region: {{ $region }}
+                instanceId: {{ $i }}
+                environment: {{ $environment }}
+                tags:
+                  fleet: {{ $fleetName }}
+                  environment: {{ $environment }}
+                  instance: "{{ $i }}"
+                  region: {{ $region }}
+                  {{- range $key, $value := $tags }}
+                  {{ $key }}: {{ $value }}
+                  {{- end }}
+          {{- end }}
+          
+          {{/* Create fleet coordinator */}}
+          ---
+          apiVersion: nop.crossplane.io/v1alpha1
+          kind: NopResource
+          metadata:
+            name: {{ $fleetName }}-coordinator
+            annotations:
+              crossplane.io/external-name: {{ $fleetName }}-coordinator
+              crossplane.io/composition-resource-name: fleet-coordinator
+          spec:
+            forProvider:
+              conditionAfter:
+                - conditionType: "Ready"
+                  conditionStatus: "True"
+                  time: "5s"
+              fields:
+                fleetName: {{ $fleetName }}
+                region: {{ $region }}
+                totalInstances: {{ $instanceCount }}
+                environment: {{ $environment }}
+                role: "coordinator"
+                tags:
+                  fleet: {{ $fleetName }}
+                  environment: {{ $environment }}
+                  role: "coordinator"
+                  region: {{ $region }}
+                  {{- range $key, $value := $tags }}
+                  {{ $key }}: {{ $value }}
+                  {{- end }}
+
+    - step: automatically-detect-ready-composed-resources
+      functionRef:
+        name: crossplane-contrib-function-auto-ready 
